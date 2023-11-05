@@ -46,6 +46,7 @@ jobs:
           image-ref: 'anailieva/python:latest'
           format: 'table'
           exit-code: '1'
+          severity: 'CRITICAL,HIGH'
 
   push:
     runs-on: ubuntu-latest
