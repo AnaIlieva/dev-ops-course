@@ -5,7 +5,7 @@ on:
     branches:
       - main
 jobs:
-  build-and-push:
+  build-and-scan:
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -34,7 +34,26 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      - name: Build and push
+      - name: Build docker image
+        uses: docker/build-push-action@v3
+        with:
+          push: false
+          tags: anailieva/python:latest
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'anailieva/python:latest'
+          format: 'table'
+          exit-code: '1'
+
+  push:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Push docker image
+        needs: build-and-scan
         uses: docker/build-push-action@v3
         with:
           push: true
